@@ -16,7 +16,7 @@ export default {
       type: String,
       required: true
     },
-    className: {
+    className: {git commit -m "first commit"
       type: String,
       default: ''
     }
