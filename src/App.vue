@@ -1,7 +1,6 @@
 <template>
   <div id="app">
     <router-view />
-<div class="hello">你好</div>
   </div>
 </template>
 
