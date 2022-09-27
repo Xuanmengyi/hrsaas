@@ -1,0 +1,9 @@
+export const imgerror = {
+    inserted(el, binding, vnode) {
+        console.log(el)
+        console.log(binding)
+        el.onerror = function() {
+            el.src = binding.value
+        }
+    }
+}

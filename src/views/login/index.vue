@@ -52,7 +52,7 @@ export default {
       },
       loginFormRules: {
         mobile: [
-          { required: true, message:'请填写手机号', trigger: 'blur' },
+          { required: true, message: '请填写手机号', trigger: 'blur' },
           {
             validator: validMobile,
             trigger: 'blur'
@@ -74,8 +74,8 @@ export default {
     showPwd() {
       this.passwordType === 'password' ? this.passwordType = '' : this.passwordType = 'password'
       this.$nextTick(() => {
-      this.$refs.pwd.focus()
-     })
+        this.$refs.pwd.focus()
+      })
     },
     async onLogin() {
       try {
