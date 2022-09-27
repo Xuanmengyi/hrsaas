@@ -16,7 +16,6 @@ function isCheckTimeOut() {
 // 请求拦截器，对请求数据时候的统一处理
 service.interceptors.request.use(config => {
   if (store.getters.token) {
-    console.log(isCheckTimeOut())
     if (isCheckTimeOut()) { // 超时
       store.dispatch('user/logout')
       router.push('/login')
