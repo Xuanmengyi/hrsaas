@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    title="新增角色"
+    :title='title'
     width="60%"
     :visible.sync="dialogVisible"
     :before-close="handleClose"
@@ -50,6 +50,10 @@ export default {
         handleClose() {
         this.$emit('update:dialogVisible', false)
         this.$refs.roleDialogForm.resetFields()
+        this.roleForm = {
+        name: '',
+        description: ''
+      }
       },
      async submit() {
       try {
@@ -65,6 +69,11 @@ export default {
         this.loading = false
       }
         }
+  },
+  computed: {
+    title() {
+       return this.roleForm.id ? '编辑角色' : '新增角色'
+     }
    }
 }
 </script>

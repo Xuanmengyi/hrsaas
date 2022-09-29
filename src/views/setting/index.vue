@@ -5,7 +5,7 @@
     <el-tabs v-model="activeName">
       <el-tab-pane label="角色管理" name="first">
         <el-row :gutter="10">
-          <el-button type="primary" style="margin-left:10px;" size="small" icon="el-icon-plus" @click="dialogVisible=!dialogVisible">新增角色</el-button>
+          <el-button type="primary" style="margin-left:10px;" size="small" icon="el-icon-plus" @click="addRole">新增角色</el-button>
         </el-row>
         <el-table style="width:100%" :data="roleList" :loading="loading">
           <el-table-column label="序号" width="120" type="index" />
@@ -15,7 +15,7 @@
             <template slot-scope="{row}">
     <el-button size="small" type="success">分配权限</el-button>
     <el-button size="small" type="primary" @click="edit(row)">编辑</el-button>
-    <el-button size="small" type="danger">删除</el-button>
+    <el-button size="small" type="danger" @click="del(row)">删除</el-button>
   </template>
           </el-table-column>
   </el-table>
@@ -57,7 +57,7 @@
 </el-form>
       </el-tab-pane>
     </el-tabs>
-    <add-role :dialogVisible.sync="dialogVisible" @refreshList="getRoleList"></add-role>
+    <addRole :dialogVisible.sync="dialogVisible" @refreshList="getRoleList" ref="addRole"></addRole>
   </el-card>
 
   </div>
@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import { getRoleListAPI, getCompanyInfo } from '@/api/setting.js'
+import { getRoleListAPI, getCompanyInfo,deleteRole } from '@/api/setting.js'
 import { mapGetters } from 'vuex'
 import addRole from './components/addRole.vue'
 export default {
@@ -96,20 +96,42 @@ export default {
        this.loading = true
        const { rows, total } = await getRoleListAPI(this.page)
        this.total = total
-       this.roleList = rows
+        this.roleList = rows
+        if (this.total > 0 && this.roleList.length === 0) {
+          this.page.page--
+          this.getRoleList()
+        }
      } catch (error) {
        console.log(error)
       } finally {
         this.loading = false
      }
     },
+    addRole() {
+      this.dialogVisible = true
+    },
     edit(row) {
-      this.$refs.addRole.formData = row
+     // console.log(this.$refs.addRole)
+      this.$refs.addRole.roleForm = { ...row }
       this.dialogVisible = true
     },
     async getCompanyInfo() {
       this.companyInfo = await getCompanyInfo(this.$store.getters.companyId)
-}
+    },
+    async del({ id }) {
+      try {
+       await this.$confirm('确定要删除该角色嘛', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+       })
+        await deleteRole(id)
+        this.getRoleList()
+        console.log('success')
+      } catch (error) {
+        console.log('cancel')
+      }
+    }
   },
   computed: {
     ...mapGetters(['companyId'])
