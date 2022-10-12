@@ -12,6 +12,9 @@ import App from './App'
 import store from './store'
 import router from './router'
 
+import components from '@/components'
+Vue.use(components)
+
 import '@/icons' // icon
 import '@/permission' // permission control
 import * as directives from '@/directives'

@@ -1,36 +1,63 @@
 <template>
-    <div class="departments-container">
+    <div class="departments-container" v-loading="loading">
     <el-card>
-      <el-row type="flex" justify="space-around" align="middle" style="height:40px">
-        <el-col>
-          <span>江苏传智播客教育科技股份有限公司</span>
-        </el-col>
-        <el-col :span="4">
-          <el-row type="flex">
-            <el-col>
-              <span>负责人</span>
-            </el-col>
-            <el-col>
-              <el-dropdown>
-                <span>
-                  操作<i class="el-icon-arrow-down el-icon--right" />
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item>添加子部门</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </el-col>
-          </el-row>
-        </el-col>
-      </el-row>
+     <tree-node  :treeNode="company" :isRoot="false" @addDept="handleAddDept"/>
     </el-card>
+    <el-tree :data="departs" :props="defaultProps" default-expand-all >
+     <tree-node slot-scope="{ data }" :treeNode="data" @addDept="handleAddDept" @editDept="editDept" @refreshList="getDepartments" />
+    </el-tree>
+    <add-dept :dialog-visible.sync="dialogVisible" :tree-node="currentNode" ref="addDept" ></add-dept>
   </div>
 
 </template>
 
 <script>
+import treeNode from './components/treeNode.vue'
+import { getDepartments } from '@/api/departments'
+import { tranListtoTree } from '@/utils/index'
+import addDept from './components/add-dept.vue'
 export default {
+  components: {
+    treeNode,
+    addDept
+  },
+  created() {
+    this.getDepartments() // 调用自身的方法
+  },
+  data() {
+    return {
+      departs: [],
+      defaultProps: {
+          label: 'name'
+      },
+      company: {},
+      dialogVisible: false,
+      currentNode: { },
+      loading:false
+    }
+  },
+  methods: {
+  async  getDepartments() {
+     try {
+       this.loading=true
+        const { depts, companyName, companyManage } = await getDepartments()
+      this.departs = tranListtoTree(depts, '')
+      this.company = { name: companyName, manager: companyManage, id: '' }
+     } finally{
+       this.loading=false
+     }
+    },
+    handleAddDept(node) {
+      this.dialogVisible = true
+      this.currentNode = node
+    },
+    editDept(node){
+      this.dialogVisible = true
+      this.currentNode = {...node}
+      this.$refs.addDept.formData={...node}
+    }
 
+  }
 }
 </script>
 
@@ -40,7 +67,7 @@ export default {
     margin: 20px auto;
     .el-tree {
       .el-tree-node__content {
-        // padding-right: 20px;
+         padding-right: 20px;
       }
     }
   }
